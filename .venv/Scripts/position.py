@@ -6,9 +6,9 @@ class Position:
 
     def dist_to_wall(self, wall):
         if wall.is_vertical():
-            res = abs(wall.get_end().x - self.x)
+            res = wall.get_end().get_x() - self.x
         else:
-            res = abs(wall.get_end().y - self.y)
+            res = abs(wall.get_end().get_y() - self.y)
         return res
 
     def get_x(self):

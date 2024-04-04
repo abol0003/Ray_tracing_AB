@@ -1,5 +1,4 @@
 from position import Position
-import tkinter as tk
 
 class Receiver:
     def __init__(self, position, sensitivity, gain):

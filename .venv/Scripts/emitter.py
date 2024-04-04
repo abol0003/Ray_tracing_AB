@@ -1,7 +1,7 @@
-import tkinter as tk
 from position import Position
 
 class Emitter:
+
     def __init__(self, position, power, frequency, gain):
         self.position = position
         self.power = power

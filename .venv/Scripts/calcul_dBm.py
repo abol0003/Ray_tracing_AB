@@ -1,5 +1,4 @@
 import numpy as np
-from physics import calculer_gamma_perp, calculer_phase_accumulee
 
 def totalW(ray): #ok
     """
