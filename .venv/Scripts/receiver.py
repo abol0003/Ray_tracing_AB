@@ -2,21 +2,18 @@ from position import Position
 import tkinter as tk
 
 class Receiver:
-    def __init__(self, position, sensitivity, gain, frequency, bandwidth):
+    def __init__(self, position, sensitivity, gain):
         """
         Initialise un nouveau récepteur.
 
         :param position: Objet Position représentant la position du récepteur.
         :param sensitivity: Sensibilité du récepteur en dBm.
-        :param antenna_gain: Gain de l'antenne du récepteur en dBi.
-        :param frequency: Fréquence de fonctionnement du récepteur en Hz.
-        :param bandwidth: Largeur de bande du récepteur en Hz.
+        :param gain: Gain de l'antenne du récepteur en dBi.
+
         """
         self.position = position  # position est maintenant un objet de la classe Position
         self.sensitivity = sensitivity
         self.gain = gain
-        self.frequency = frequency
-        self.bandwidth = bandwidth
         self.received_power = None  # Ajout d'un attribut pour stocker la puissance reçue
 
 
@@ -32,3 +29,7 @@ class Receiver:
         canvas.create_oval(x * scale - receiver_radius, y * scale - receiver_radius,
                            x * scale + receiver_radius, y * scale + receiver_radius,
                            fill='green', outline='black')
+        if self.received_power is not None:
+            # Affiche la puissance reçue à côté du récepteur
+            canvas.create_text(x * scale + receiver_radius + 10, y * scale,
+                               text=f"{self.received_power:.2f} dBm", fill="blue")

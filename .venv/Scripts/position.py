@@ -1,5 +1,3 @@
-import math
-import matplotlib.pyplot as plt
 
 class Position:
     def __init__(self, x, y):

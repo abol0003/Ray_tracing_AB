@@ -1,99 +1,83 @@
 import numpy as np
-from matplotlib import pyplot as plt
 from emitter import Emitter
 from receiver import Receiver
 from obstacle import Obstacle
 from environment import Environment
-from calcul import *
+from calcul_dBm import *
 from physics import *
+from position import Position
+from material import Material
+from ray import Ray
+
 class RayTracing:
     def __init__(self, environment):
         self.environment = environment
+        self.beta = self.material.beta(60e9) # Constante beta calculée à partir de la fréquence de 60 GHz
 
     def compute_image_position(self, obstacle, source_position):
-
         if obstacle.is_vertical():
             return Position(2 * obstacle.start.x - source_position.x, source_position.y)
         else:
             return Position(source_position.x, 2 * obstacle.start.y - source_position.y)
 
+    def distance(self, position1, position2):
+
+    def compute_electrical_field_and_power(self, transmission_coefficient, distance, obstacle=None, interaction_type='direct'):
+        # Utilise la formule pour calculer le champ électrique et la puissance
+        En = (transmission_coefficient * np.sqrt(60 * 1.64 * 10e-3) * np.exp(complex(0, -distance * self.beta))) / distance
+        P = np.abs(En) ** 2
+        return En, P
+
+    def create_ray_and_compute_power_1(self, emitter, receiver, start_pos, end_pos, image):
+        if obstacle.check_intersection(start_pos, end_pos):
+            #calcule le point d'impact
+            imp_p= obstacle.impact_point(start_pos, end_pos)
+            # Calcul de la transmission totale et de la distance dans le matériel pour des chemins directs ou réfléchis
+            transmission_coefficient1, dm_1 = transmission_totale(obstacles, start_position, imp_p)
+            transmission_coefficient2, dm_2 = transmission_totale(obstacles, imp_p, end_position)
+            reflexion_coefficient = calculer_coeff_reflexion(obstacle, start_pos, imp_p)
+            coeff_tot=transmission_coefficient1*transmission_coefficient2*reflexion_coefficient
+            distance_vector = +dm_1+dm_2
+            distance = np.linalg.norm(distance_vector) + distance_in_material
+            if distance == 0: distance = 10 ** (-6)  # Éviter la division par zéro
+
+            # Calcul du champ électrique et de la puissance
+            En, P = self.compute_electrical_field_and_power(coeff_tot, distance, obstacle=None, interaction_type=interaction_type)
+
+            # Création du rayon avec les informations de puissance et d'interaction
+            ray = Ray( imp_p, end_pos, P, emitter.frequency, interaction_type=interaction_type)
+            for obstacle in obstacles:
+                ray.add_interaction(interaction_type, obstacle)
+            self.environment.rays.append(ray)
+            return P
+        return 0
+
     def ray_tracer(self):
         for emitter in self.environment.emitters:
             for receiver in self.environment.receivers:
-                # Liste temporaire pour stocker les informations sur les rayons de cet émetteur vers ce récepteur
-                rays_info = []
-
                 # Chemin direct
-                if not check_intersection(self.environment.obstacles, emitter.position, receiver.position):
-                    direct_power = calculer_puissance_recue(emitter, receiver, [])
-                    rays_info.append({'type': 'direct', 'power': direct_power})
+                self.create_ray_and_compute_power(emitter, receiver, emitter.position, receiver.position)
 
-                    # Réflexion simple
-                    for obstacle in self.environment.obstacles:
-                        image_position = self.compute_image_position(obstacle, emitter.position)
-                        if not check_intersection(self.environment.obstacles, image_position, receiver.position):
-                            # Calculer l'angle d'incidence pour la réflexion
-                            theta_i = calculer_angle_incidence(obstacle.position, emitter.position)
-                            # Calculer le coefficient de réflexion
-                            gamma_perp = calculer_gamma_perp(obstacle, theta_i)
-                            # Assumer une perte de réflexion fictive pour simplifier, dans la réalité, utiliser gamma_perp pour calculer les pertes
-                            reflected_power = calculer_puissance_recue(emitter, receiver, [(obstacle, 'reflection')])
-                            rays_info.append({'type': 'reflected', 'obstacle': obstacle, 'power': reflected_power})
+                # Réflexions simples et doubles     #il y a des erreur car il faut que le rayon soit créer à partir du point d'impact du rayon sur l'obstacle
+                for obstacle in self.environment.obstacles:
+                    image_position = self.compute_image_position(obstacle, emitter.position)
+                    self.create_ray_and_compute_power(emitter, receiver, emitter.position, image_position, 'reflected', [obstacle])
 
-                    # Réflexion double
                     for second_obstacle in self.environment.obstacles:
-                        if second_obstacle == obstacle:
-                            continue  # Évite de considérer le même obstacle pour la deuxième réflexion
+                        if second_obstacle == obstacle: continue
+                        image_pos_second_reflection = self.compute_image_position(second_obstacle, image_position)
+                        self.create_ray_and_compute_power(emitter, receiver, emitter.position, image_pos_second_reflection, 'double_reflected', [obstacle, second_obstacle])
 
-                        # Calcule la position de l'image de l'émetteur après la première réflexion
-                        image_pos_first_reflection = self.compute_image_position(obstacle, emitter.position)
-
-                        # Utilise cette position d'image comme "émetteur" pour calculer la deuxième réflexion
-                        image_pos_second_reflection = self.compute_image_position(second_obstacle,
-                                                                                  image_pos_first_reflection)
-
-                        # Vérifie si le chemin est valide (pas d'intersection avec d'autres obstacles)
-                        if not check_intersection(self.environment.obstacles, emitter.position,
-                                                  image_pos_first_reflection) \
-                                and not check_intersection(self.environment.obstacles, image_pos_first_reflection,
-                                                           image_pos_second_reflection) \
-                                and not check_intersection(self.environment.obstacles, image_pos_second_reflection,
-                                                           receiver.position):
-                            # Si valide, calcule la puissance reçue avec cette double réflexion
-                            theta_i_first = calculer_angle_incidence(emitter.position, image_pos_first_reflection)
-                            theta_i_second = calculer_angle_incidence(image_pos_first_reflection, receiver.position)
-                            gamma_perp_first = calculer_gamma_perp(obstacle, theta_i_first)
-                            gamma_perp_second = calculer_gamma_perp(second_obstacle, theta_i_second)
-                            power_reflected_double = calculer_puissance_recue(emitter, receiver,
-                                                                              [obstacle, second_obstacle]) * np.abs(
-                                gamma_perp_first * gamma_perp_second) ** 2
-
-                            # Stocke les informations de ce rayon pour la visualisation
-                            rays_info.append({
-                                'type': 'double_reflected',
-                                'obstacle1': obstacle,
-                                'obstacle2': second_obstacle,
-                                'power': power_reflected_double
-                            })
-                # Traitement des informations sur les rayons pour déterminer la puissance reçue maximale
-                max_power = max([ray['power'] for ray in rays_info], default=0)
-                receiver.received_power = max_power  # Assumer une propriété pour stocker la puissance reçue
-
-                # Après avoir traité tous les obstacles pour cet émetteur-récepteur, ajoute les rayons calculés à l'environnement
-                self.environment.rays.extend(rays_info)
+                # Calcul de la puissance totale reçue et mise à jour du récepteur
+                total_power_w = sum(ray.power for ray in self.environment.rays if ray.end_position == receiver.position)
+                receiver.received_power_dBm = 10 * np.log10(total_power_w / 10 ** (-3))
 
     def visualize_ray_paths(self):
         plt.figure(figsize=(10, 6))
-        # Correction : Accès direct aux objets 'emitter' et 'receiver' supprimé
         for ray in self.environment.rays:
-            if ray['type'] == 'direct':
-                plt.plot([ray['start'].x, ray['end'].x], [ray['start'].y, ray['end'].y], 'g-', label='Direct')
-            elif ray['type'] == 'reflected':
-                plt.plot([ray['start'].x, ray['reflection_point'].x, ray['end'].x],
-                         [ray['start'].y, ray['reflection_point'].y, ray['end'].y], 'r--', label='Reflected')
+            plt.plot([ray.start_position.x, ray.end_position.x], [ray.start_position.y, ray.end_position.y], 'g-' if ray.interaction_type == 'direct' else 'r--', label=ray.interaction_type.capitalize())
         plt.xlabel('X Position')
         plt.ylabel('Y Position')
         plt.title('Ray Paths')
         plt.legend()
         plt.show()
-
