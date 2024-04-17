@@ -4,9 +4,9 @@ from position import Position
 from material import Material
 class RayTracing:
 
-    def __init__(self, environment, frequency=60e9):
+    def __init__(self, environment, frequency=(868.3e6)):
         self.environment = environment
-        self.frequency = frequency  # Défini à 60 GHz par défaut
+        self.frequency = frequency
         self.beta = self.environment.materials['concrete'].beta(self.frequency)
 
     def compute_image_position(self, obstacle, source_position):
@@ -18,13 +18,13 @@ class RayTracing:
     def calc_distance(self, p1, p2):
         return np.linalg.norm(np.array([p1.x, p1.y]) - np.array([p2.x, p2.y]))
 
-    def compute_electrical_field_and_power(self, transmission_coefficient, distance):
-        c= 3e8
+    def compute_electrical_field_and_power(self, coefficient, distance):
+        c= 299792458
         h_e = c/(self.frequency * np.pi)
         R_a=73
-        En = (transmission_coefficient * np.sqrt(60 * 1.64 * 10e-3) * np.exp(1j * (-distance) * self.beta)) / distance
-        P = (h_e*np.abs(En) ** 2)/(8*R_a)
-        return En, P
+        Elec_field = (coefficient * np.sqrt(60 * 1.64e-3) * np.exp(1j * (-distance) * self.beta)) / distance
+        Power = ((h_e * np.abs(Elec_field)) ** 2) / (8 * R_a)
+        return Elec_field, Power
 
     def direct_propagation(self, emitter, receiver): #ok pour la propa direct
         Entot, Ptot = 0, 0

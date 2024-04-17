@@ -3,7 +3,8 @@ from position import Position
 from material import Material
 from obstacle import Obstacle
 
-frequency = 60e9
+#frequency = 60e9
+frequency = ((868.3)*(10**6))
 def calculer_angle_incidence(pos_emetteur, pos_incidence, obstacle): #ok
     """
     Calcule et renvoie l'angle d'incidence avec un émetteur et un point d'incidence donnés.
@@ -52,21 +53,26 @@ def calculer_gamma_perp(obstacle, theta_i):  #ok
 
     # Calcul du coefficient de réflexion perpendiculaire en utilisant les impédances
     # et l'angle de transmission theta_t
-    gammaperp = (Z0 * np.cos(theta_i) - Z_material * np.cos(theta_t)) / (
-                Z0 * np.cos(theta_i) + Z_material * np.cos(theta_t))
+    gammaperp = (Z_material * np.cos(theta_i) - Z0 * np.cos(theta_t)) / (
+                Z_material * np.cos(theta_i) + Z0 * np.cos(theta_t))
 
     return gammaperp
 
 
-def calculer_gammam(obstacle, theta_i): #ok
+def calculer_gammam(obstacle): #ok
     """
     Calcule la constante de propagation complexe.
     """
     omega=2*np.pi*frequency
     mu0 = 4 * np.pi * 1e-7
-    #s = calculer_distance_parcourue(obstacle, theta_i)
-    gammam= 1j*omega*np.sqrt(mu0*obstacle.material.permittivity)
+    eps_m = obstacle.material.permittivity *(10**(-9))/(36*np.pi)
+    sigma_m = obstacle.material.conductivity
+    alpha_m = omega * np.sqrt(mu0 * eps_m / 2) * np.sqrt(np.sqrt(1 + ((sigma_m / (omega * eps_m)) ** 2)) - 1)
+    beta_m = omega * np.sqrt(mu0 * eps_m / 2) * np.sqrt(np.sqrt(1 + ((sigma_m / (omega * eps_m)) ** 2)) + 1)
+    gammam= alpha_m + 1j*beta_m
+
     return gammam
+
 
 def calculer_distance_parcourue(obstacle, theta_i): #ok
     """
@@ -103,12 +109,12 @@ def calculer_coeff_reflexion(obstacle, position_emetteur, position_reflexion): #
     theta_i = calculer_angle_incidence(position_emetteur, position_reflexion, obstacle)
     theta_t =calcul_angle_trans(obstacle, theta_i)
     gammap = calculer_gamma_perp(obstacle, theta_i)
-    gamma_m = calculer_gammam(obstacle, theta_i)
+    gamma_m = calculer_gammam(obstacle)
     s = calculer_distance_parcourue(obstacle, theta_i)
     beta_s = calculer_phase_accumulee(obstacle, theta_i)
 
-    numerateur = gammap * np.exp(-2 * gamma_m*s) * np.exp(beta_s *s)
-    denominateur = 1 - ((gammap ** 2) * np.exp(-2 * gamma_m * s) * np.exp(s * beta_s))
+    numerateur = gammap * np.exp(-2 * gamma_m*s) * np.exp(beta_s)
+    denominateur = 1 - ((gammap ** 2) * np.exp(-2 * gamma_m * s) * np.exp(beta_s))
 
     return gammap - ((1 - gammap ** 2)) * (numerateur / denominateur)
 
@@ -119,11 +125,11 @@ def calculer_coeff_transmission(obstacle, position_emetteur, position_recepteur)
     theta_i = calculer_angle_incidence(position_emetteur, position_recepteur, obstacle)
     s = calculer_distance_parcourue(obstacle, theta_i)
     gamma_perp = calculer_gamma_perp(obstacle, theta_i)
-    gamma_m = calculer_gammam(obstacle, theta_i)
+    gamma_m = calculer_gammam(obstacle)
     beta_s = calculer_phase_accumulee(obstacle, theta_i)
 
     numerateur = (1 - (gamma_perp ** 2)) * np.exp(-gamma_m * s )
-    denominateur = 1 - ((gamma_perp ** 2) * np.exp(-2 * gamma_m *s) * np.exp(s* beta_s))
+    denominateur = 1 - ((gamma_perp ** 2) * np.exp(-2 * gamma_m *s) * np.exp(beta_s))
 
     return numerateur / denominateur
 
@@ -141,6 +147,7 @@ def transmission_totale(obstacles, position_depart, position_fin): #normalement 
     distance_totale = 0
     for obstacle in obstacles:
         if obstacle.check_intersection(position_depart, position_fin):
+            inter_point=obstacle.impact_point(position_depart, position_fin)
             theta_i = calculer_angle_incidence(position_depart, position_fin, obstacle)
             coeff_transmission = calculer_coeff_transmission(obstacle, position_depart, position_fin)
             coeff_total *= coeff_transmission

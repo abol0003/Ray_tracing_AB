@@ -22,7 +22,7 @@ class Obstacle:
         """Retourne True si l'obstacle est vertical, False sinon."""
         return self.start.x == self.end.x
 
-    def check_intersection(self, start_point, end_point): #ok
+    def check_intersection(self, start_point, end_point):
         """
         Vérifie si le segment de ligne entre start_point et end_point intersecte cet obstacle.
         :param start_point: Instance de Position représentant le point de départ du segment.
@@ -41,23 +41,20 @@ class Obstacle:
         rxs = np.cross(r, s)
         qpxr = np.cross((q1 - p1), r)
 
-        if rxs == 0 and qpxr == 0:
-            # Les lignes sont colinéaires
+        if rxs == 0:
+            # Les lignes sont colinéaires ou parallèles
             return False
 
-        if rxs == 0 and qpxr != 0:
-            # Les lignes sont parallèles et non intersectées
-            return False
+        t = np.cross((q1 - p1), s) / rxs
+        u = np.cross((q1 - p1), r) / rxs
 
-        if rxs != 0:
-            t = np.cross((q1 - p1), s) / rxs
-            u = np.cross((q1 - p1), r) / rxs
+        if 0 <= t <= 1 and 0 <= u <= 1:
+            intersection = p1 + t * r
+            if np.allclose(intersection, q1) or np.allclose(intersection, q2):
+                # Intersection at the ray start or end est pas compté
+                return False
+            return True
 
-            if 0 <= t <= 1 and 0 <= u <= 1:
-                # Il y a intersection
-                return True
-
-        # Aucune intersection trouvée
         return False
 
     def is_on_obstacle(self, intersection_point): #ok
@@ -88,6 +85,7 @@ class Obstacle:
         if r_cross_s == 0:
             return None
 
+
         # Calcul de t pour trouver le point d'intersection le long du segment [p, p+r]
         t = np.cross(q - p, s) / r_cross_s
 
@@ -107,10 +105,11 @@ class Obstacle:
         Z0 = np.sqrt(mu0 / eps0)
 
         # Calcul de l'impédance du matériau de l'obstacle
-        eps_r= self.material.permittivity
-        #sigma = self.material.conductivite
-        #eps_r = eps_m - 1j * (sigma / omega)
+        eps_m= self.material.permittivity*(10**(-9))/(36*np.pi)
+        sigma = self.material.conductivity
+        eps_r = eps_m - 1j * (sigma / (omega))
         # Calcul de l'impédance complexe du matériau
         Z_material = np.sqrt(mu0 / eps_r)
+        #Z_material= 171.57 - 1j*(6.65)
 
         return Z_material, Z0
