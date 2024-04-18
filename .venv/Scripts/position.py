@@ -4,12 +4,6 @@ class Position:
         self.x = x
         self.y = y
 
-    def dist_to_wall(self, wall):
-        if wall.is_vertical():
-            res = wall.get_end().get_x() - self.x
-        else:
-            res = abs(wall.get_end().get_y() - self.y)
-        return res
 
     def get_x(self):
         return self.x

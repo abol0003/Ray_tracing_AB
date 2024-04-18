@@ -4,7 +4,7 @@ class Emitter:
 
     def __init__(self, position, power, frequency, gain):
         self.position = position
-        self.power = power
+        self.power = power #dBm
         self.frequency = frequency
         self.gain = gain  # Ajout de l'attribut gain
 
@@ -13,7 +13,7 @@ class Emitter:
         emitter_radius = 0.05 * scale  # Taille visuelle de l'émetteur
         canvas.create_oval(emitter_x - emitter_radius, emitter_y - emitter_radius,
                            emitter_x + emitter_radius, emitter_y + emitter_radius,
-                           fill='blue', outline='black')
+                           fill='white', outline='black')
 
 
 

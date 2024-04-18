@@ -4,7 +4,7 @@ from position import Position
 from material import Material
 class RayTracing:
 
-    def __init__(self, environment, frequency=(868.3e6)):
+    def __init__(self, environment, frequency):
         self.environment = environment
         self.frequency = frequency
         self.beta = self.environment.materials['concrete'].beta(self.frequency)
@@ -78,15 +78,17 @@ class RayTracing:
         return Power_tot
 
     def ray_tracer(self):
-        total_power = 0
-        for emitter in self.environment.emitters:
-            for receiver in self.environment.receivers:
+        for receiver in self.environment.receivers:
+            max_power = -100  # Initialise à une puissance extrêmement basse
+            for emitter in self.environment.emitters:
                 direct_power = self.direct_propagation(emitter, receiver)
                 reflex_power = self.reflex_and_power(emitter, receiver)
                 double_reflex_power = self.double_reflex_and_power(emitter, receiver)
                 total_power = direct_power + reflex_power + double_reflex_power
-                receiver.received_power_dBm = 10 * np.log10(total_power / 1e-3)  # Conversion en dBm
-
+                received_power_dBm = 10 * np.log10(total_power / 1e-3)  # Conversion en dBm
+                if received_power_dBm > max_power:
+                    max_power = received_power_dBm
+            receiver.received_power_dBm = max_power
     def visualize_ray_paths(self):
         plt.figure(figsize=(10, 6))
         for ray in self.environment.rays:

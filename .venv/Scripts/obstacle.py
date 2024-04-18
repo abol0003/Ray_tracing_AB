@@ -13,10 +13,8 @@ class Obstacle:
     def draw(self, canvas, scale=50):
         x0, y0 = self.start.get_x() * scale, self.start.get_y() * scale
         x1, y1 = self.end.get_x() * scale, self.end.get_y() * scale
-        if self.material.name == 'metal':
-            canvas.create_rectangle(x0, y0, x1, y1, fill=self.material.color, width=self.thickness * scale)
-        else:
-            canvas.create_line(x0, y0, x1, y1, fill=self.material.color, width=self.thickness * scale)
+
+        canvas.create_line(x0, y0, x1, y1, fill=self.material.color, width=self.thickness * scale)
 
     def is_vertical(self): #ok
         """Retourne True si l'obstacle est vertical, False sinon."""
