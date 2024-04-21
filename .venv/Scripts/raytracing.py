@@ -9,20 +9,29 @@ class RayTracing:
         self.frequency = frequency
         self.beta = self.environment.materials['concrete'].beta(self.frequency)
 
-    def compute_image_position(self, obstacle, source_position):
-        if obstacle.is_vertical():
+    def compute_image_position(self, obstacle, source_position): #determine le point image de l'emetteur
+        if obstacle.is_vertical(): #obstacle vertical
             return Position(2 * obstacle.start.x - source_position.x, source_position.y)
-        else:
+        elif obstacle.is_horizontal(): #horizontal
             return Position(source_position.x, 2 * obstacle.start.y - source_position.y)
+        else: #oblique (ici juste baie vitrée)
+            AB = np.array([obstacle.end.x - obstacle.start.x, obstacle.end.y - obstacle.start.y])
+            n = np.array([-AB[1], AB[0]])  # Vecteur normal, choisit une orientation perpendiculaire
+            A = np.array([obstacle.start.x, obstacle.start.y])
+            source = np.array([source_position.x, source_position.y])
 
-    def calc_distance(self, p1, p2):
+            # Calcul du point d'image
+            image_position = source - 2 * (np.dot(source - A, n) / np.dot(n, n)) * n
+            return Position(image_position[0], image_position[1])
+
+    def calc_distance(self, p1, p2): #norme de la distance entre 2 points
         return np.linalg.norm(np.array([p1.x, p1.y]) - np.array([p2.x, p2.y]))
 
-    def compute_electrical_field_and_power(self, coefficient, distance):
+    def compute_electrical_field_and_power(self, coefficient, distance): #champs electrique e(V/m) et puissance (W)
         c= 299792458
         h_e = c/(self.frequency * np.pi)
         R_a=73
-        Elec_field = (coefficient * np.sqrt(60 * 1.64e-3) * np.exp(1j * (-distance) * self.beta)) / distance
+        Elec_field = (coefficient * np.sqrt(60* 1.7 * ((10**(2))/1000)) * np.exp(1j * (-distance) * self.beta)) / distance
         Power = ((h_e * np.abs(Elec_field)) ** 2) / (8 * R_a)
         return Elec_field, Power
 
@@ -79,7 +88,7 @@ class RayTracing:
 
     def ray_tracer(self):
         for receiver in self.environment.receivers:
-            max_power = -100  # Initialise à une puissance extrêmement basse
+            max_power = -90  # Initialise à une puissance extrêmement basse
             for emitter in self.environment.emitters:
                 direct_power = self.direct_propagation(emitter, receiver)
                 reflex_power = self.reflex_and_power(emitter, receiver)

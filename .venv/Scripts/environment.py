@@ -18,7 +18,7 @@ class Environment:
         self.init_receivers()
         self.rays =[]
     def init_materials(self):
-        # Initialisation des matériaux avec des instances de la classe Material
+        # Initialisation des matériaux
         self.materials['concrete'] = Material('concrete', 6.4954, 1.43, 'black')
         self.materials['cloison'] = Material('cloison', 2.7, 0.005346, 'red')
         self.materials['glass'] = Material('glass', 6.3919, 0.000107, 'lightblue')
@@ -56,9 +56,9 @@ class Environment:
         self.obstacles.append(Obstacle(Position(5.8, 7.875), Position(5.8, 6.15), self.materials['metal'], 0.05))
 
     def init_emitters(self):
-        # ajout d'un émetteur
-        self.emitters.append(Emitter(Position(9.4, 7), 20, 60e9, 1.7))
-        self.emitters.append(Emitter(Position(8.5, 5), 20, 60e9, 1.7))
+        # ajout émetteur
+        #self.emitters.append(Emitter(Position(9.4, 7), 20, 60e9, 1.7))
+        self.emitters.append(Emitter(Position(7, 4), 20, 60e9, 1.7)) # emitteur optimal
 
     def init_receivers(self):
         # Exemple d'ajout d'un récepteur
@@ -96,4 +96,4 @@ def create_window_with_environment():
     root.mainloop()
 
 
-create_window_with_environment()
+#create_window_with_environment()

@@ -20,6 +20,11 @@ class Obstacle:
         """Retourne True si l'obstacle est vertical, False sinon."""
         return self.start.x == self.end.x
 
+    def is_horizontal(self):
+        return self.start.y == self.end.y
+
+
+
     def check_intersection(self, start_point, end_point):
         """
         Vérifie si le segment de ligne entre start_point et end_point intersecte cet obstacle.
@@ -79,7 +84,7 @@ class Obstacle:
         r_cross_s = np.cross(r, s)
 
         # Si r et s sont parallèles, r_cross_s sera 0, ce qui peut indiquer des segments parallèles ou colinéaires
-        # Toutefois, cette fonction est appelée après une vérification d'intersection, donc cette situation ne devrait pas se présenter
+        # Par contre, cette fonction est appelée après une vérification d'intersection, donc cette situation ne devrait pas se présenter
         if r_cross_s == 0:
             return None
 
