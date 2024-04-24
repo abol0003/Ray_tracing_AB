@@ -8,6 +8,7 @@ from raytracing import RayTracing
 from position import Position
 from receiver import Receiver
 from emitter import Emitter
+import time
 
 def draw_obstacles(ax, env):
     lines = []
@@ -87,6 +88,9 @@ def optimize_emitter_position_parallel(env, width, height, resolution=0.5):
 
 if __name__ == '__main__':
     env = Environment()
+    start_time = time.time()
     create_heatmap(env, width=17, height=9, resolution=0.5)
+    end_time = time.time()
+    print(f"Heatmap Time: {end_time - start_time:.2f} seconds")
     #best_position, best_power = optimize_emitter_position_parallel(env, 17, 9, 0.5)
     #print(f"Optimal Emitter Position: {best_position} with power: {best_power} dBm")

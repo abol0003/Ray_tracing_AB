@@ -70,8 +70,8 @@ class RayTracing:
                     continue
                 elif obstacle2.check_intersection(image_pos2, receiver.position):
                     impact_point2 = obstacle2.impact_point(image_pos2, receiver.position)
-                    if obstacle1.check_intersection(image_pos1, receiver.position):
-                        impact_point1 = obstacle1.impact_point(image_pos1, receiver.position)
+                    if obstacle1.check_intersection(image_pos1, impact_point2):
+                        impact_point1 = obstacle1.impact_point(image_pos1, impact_point2)
                         if impact_point1 is None or impact_point2 is None:
                             continue
                 #trois coeff transmission poss car 3 rayons
@@ -107,4 +107,3 @@ class RayTracing:
         plt.title('Ray Paths')
         plt.legend()
         plt.show()
-
