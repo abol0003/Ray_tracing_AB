@@ -21,16 +21,19 @@ class Obstacle:
         return self.start.x == self.end.x
 
     def is_horizontal(self):
+        """
+        Détermine si l'obstacle est horizontal.
+        :return: True si horizontal, False sinon.
+        """
         return self.start.y == self.end.y
 
 
 
     def check_intersection(self, start_point, end_point):
         """
-        Vérifie si le segment de ligne entre start_point et end_point intersecte cet obstacle.
-        :param start_point: Instance de Position représentant le point de départ du segment.
-        :param end_point: Instance de Position représentant le point d'arrivée du segment.
-        :return: Booléen indiquant si une intersection est trouvée avec cet obstacle.
+        Vérifie si un segment donné intersecte cet obstacle.
+
+        return: True si intersection, False sinon.
         """
         # Convertir les points de début et de fin de cet obstacle et du segment en coordonnées numpy
         p1 = np.array([self.start.x, self.start.y])
@@ -69,10 +72,9 @@ class Obstacle:
 
     def impact_point(self, ray_start, ray_end): #ok
         """
-        Calcule et retourne le point d'impact d'un rayon avec l'obstacle, en assumant une intersection préalablement vérifiée.
-        :param ray_start: Instance de Position représentant le point de départ du rayon.
-        :param ray_end: Instance de Position représentant le point d'arrivée du rayon.
-        :return: Instance de Position représentant le point d'impact, None si pas d'intersection.
+        Calcule le point d'impact entre un rayon et cet obstacle.
+
+        return: Point d'impact, ou None si aucune intersection.
         """
         # Conversion des points en vecteurs numpy pour faciliter les opérations vectorielles
         p = np.array([self.start.x, self.start.y])
@@ -100,19 +102,19 @@ class Obstacle:
         else:
             return None
     def impedance(self, frequency):
+        """
+        Calcule l'impédance de l'obstacle
+        return: Tuple (Impédance du matériau, Impédance du vide).
+        """
         mu0 = 4 * np.pi * 1e-7  # Perméabilité du vide
         eps0 = 8.854187817e-12  # Permittivité du vide
         omega = 2 * np.pi * frequency  # Fréquence angulaire
-
         # Impédance intrinsèque du vide
         Z0 = np.sqrt(mu0 / eps0)
-
         # Calcul de l'impédance du matériau de l'obstacle
         eps_m= self.material.permittivity*(10**(-9))/(36*np.pi)
         sigma = self.material.conductivity
         eps_r = eps_m - 1j * (sigma / (omega))
         # Calcul de l'impédance complexe du matériau
         Z_material = np.sqrt(mu0 / eps_r)
-        #Z_material= 171.57 - 1j*(6.65)
-
         return Z_material, Z0

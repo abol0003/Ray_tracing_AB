@@ -57,8 +57,8 @@ class Environment:
 
     def init_emitters(self):
         # ajout émetteur
-        #self.emitters.append(Emitter(Position(9.4, 7), 20, 60e9, 1.7))
-        self.emitters.append(Emitter(Position(7, 4), 20, 60e9, 1.7)) # emitteur optimal
+        self.emitters.append(Emitter(Position(9.4, 7), 20, 60e9, 1.7))
+        #self.emitters.append(Emitter(Position(9, 6), 20, 60e9, 1.7)) # emitteur optimal
 
     def init_receivers(self):
         # Exemple d'ajout d'un récepteur
