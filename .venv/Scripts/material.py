@@ -5,5 +5,3 @@ class Material:
         self.permittivity = permittivity
         self.conductivity = conductivity
         self.color = color
-
-

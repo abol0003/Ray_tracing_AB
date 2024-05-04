@@ -89,9 +89,9 @@ class Environment:
         """
         #self.emitters.append(Emitter(Position(9.4, 7), 20, 60e9, 1.7))
         #self.emitters.append(Emitter(Position(7, 4.5), 20, 60e9, 1.7)) # emitteur optimal avec et sans ascenseur
-        #self.emitters.append(Emitter(Position(2.5, 2.5), 20, 60e9, 1.7)) # emitteur optimaux avec et sans ascenseur
-        #self.emitters.append(Emitter(Position(10.5, 4.5), 20, 60e9, 1.7)) # emitteur optimaux avec ascenseur
-        #self.emitters.append(Emitter(Position(8.5, 4.5), 20, 60e9, 1.7)) # emitteur optimaux sans ascenseur
+        #self.emitters.append(Emitter(Position(2.5, 2.5), 20, 60e9, 1.7)) # emitteur optimale pour 2 emetteur avec et sans ascenseur
+        #self.emitters.append(Emitter(Position(10.5, 4.5), 20, 60e9, 1.7)) # emitteur optimale pour 2 emetteur avec ascenseur
+        #self.emitters.append(Emitter(Position(8.5, 4.5), 20, 60e9, 1.7)) # emitteur optimale pour 2 emetteur sans ascenseur
 
     def init_receivers(self):
         """
