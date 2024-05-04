@@ -14,8 +14,10 @@ class RayTracing:
         Calcule la position image pour un obstacle donné par rapport à une position.
         """
         if obstacle.is_vertical():  # Si l'obstacle est vertical
+
             return Position(2 * obstacle.start.x - source_position.x, source_position.y)
         elif obstacle.is_horizontal():  # Si l'obstacle est horizontal
+
             return Position(source_position.x, 2 * obstacle.start.y - source_position.y)
         else:  # Pour un obstacle oblique
             AB = np.array([obstacle.end.x - obstacle.start.x, obstacle.end.y - obstacle.start.y])
@@ -23,6 +25,7 @@ class RayTracing:
             A = np.array([obstacle.start.x, obstacle.start.y])
             source = np.array([source_position.x, source_position.y])
             image_position = source - 2 * (np.dot(source - A, n) / np.dot(n, n)) * n
+
             return Position(image_position[0], image_position[1])
     def calc_distance(self, p1, p2):
         """
@@ -39,6 +42,7 @@ class RayTracing:
         R_a=73
         Elec_field = (coefficient * np.sqrt(60* 1.7 * ((10**(2))/1000)) * np.exp(1j * (-distance) * self.beta)) / distance
         Power = ((h_e * np.abs(Elec_field)) ** 2) / (8 * R_a)
+
         return Elec_field, Power
 
     def direct_propagation(self, emitter, receiver):
@@ -50,8 +54,8 @@ class RayTracing:
         distance = self.calc_distance(emitter.position, receiver.position) + dm
         if distance == 0:  # Évite la division par zéro
             distance = 10**(-6)
-
         E, Power = self.compute_electrical_field_and_power(transmission_coefficient, distance)
+
         return Power
 
     def reflex_and_power(self, emitter, receiver):
@@ -70,6 +74,7 @@ class RayTracing:
                 distance = self.calc_distance(imp_p, receiver.position) + dm_1 + dm_2
                 E, Power = self.compute_electrical_field_and_power(coeff_tot, distance)
                 Power_tot += Power
+
         return Power_tot
 
     def double_reflex_and_power(self, emitter, receiver):
@@ -99,6 +104,7 @@ class RayTracing:
                         total_distance = self.calc_distance(emitter.position, impact_point1) + self.calc_distance(impact_point1, impact_point2) + self.calc_distance(impact_point2, receiver.position)
                         Elec, Power = self.compute_electrical_field_and_power(coeff_tot, total_distance)
                         Power_tot += Power
+
         return Power_tot
 
     def ray_tracer(self):
@@ -106,7 +112,7 @@ class RayTracing:
         Exécute la simulation de ray-tracing pour tous les récepteurs et détermine la puissance maximale reçue.
         """
         for receiver in self.environment.receivers:
-            max_power = -90  # Initialise à une puissance extrêmement basse
+            max_power = -90  # Initialisation
             for emitter in self.environment.emitters:
                 direct_power = self.direct_propagation(emitter, receiver)
                 reflex_power = self.reflex_and_power(emitter, receiver)

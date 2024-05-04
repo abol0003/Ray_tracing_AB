@@ -2,12 +2,10 @@ from position import Position
 
 class Receiver:
     def __init__(self, position, sensitivity, gain):
-
-        self.position = position  # position est maintenant un objet de la classe Position
+        self.position = position
         self.sensitivity = sensitivity
         self.gain = gain
-        self.received_power = None  # Ajout d'un attribut pour stocker la puissance reçue
-
+        self.received_power = None
 
     def draw(self, canvas, scale=50):
         """

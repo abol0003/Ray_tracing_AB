@@ -4,7 +4,6 @@ from material import Material
 from obstacle import Obstacle
 
 frequency = 60e9
-
 def calculer_angle_incidence(pos_emetteur, pos_incidence, obstacle):
     """
     Calcule et renvoie l'angle d'incidence avec un émetteur et un point d'incidence donnés.
@@ -29,8 +28,7 @@ def calculer_angle_incidence(pos_emetteur, pos_incidence, obstacle):
 def calcul_angle_trans(obstacle, theta_i):
     """
     Calcule et renvoie l'angle theta_t transmis via la loi de Snell-Descartes, en considérant
-    la transition entre un matériau et l'air. Ici, on assume que la permittivité de l'air est
-    approximativement équivalente à la permittivité du vide eps0 pour simplifier le calcul.
+    la transition entre un matériau et l'air.
     """
     # Perméabilité relative de l'air par rapport au vide
     eps_r_air = 1  # Approximation pour l'air
@@ -41,22 +39,17 @@ def calcul_angle_trans(obstacle, theta_i):
 
     return theta_t
 
-
-
 def calculer_gamma_perp(obstacle, theta_i):
-
+    """
+    Calcule le coefficient de réflexion perpendiculaire
+    """
     # Récupération des impédances Z_material et Z0 de l'objet obstacle
     Z_material, Z0 = obstacle.impedance(frequency)
-
-    # Calcul de l'angle de transmission via la loi de Snell-Descartes
     theta_t = calcul_angle_trans(obstacle, theta_i)
-
-    # Calcul du coefficient de réflexion perpendiculaire
     gammaperp = (Z_material * np.cos(theta_i) - Z0 * np.cos(theta_t)) / (
                 Z_material * np.cos(theta_i) + Z0 * np.cos(theta_t))
 
     return gammaperp
-
 
 def calculer_gammam(obstacle):
     """
@@ -78,29 +71,24 @@ def calculer_distance_parcourue(obstacle, theta_i):
     Calcule la distance parcourue par le rayon à travers l'obstacle.
     """
     theta_t = calcul_angle_trans(obstacle, theta_i)
-    return np.abs(obstacle.thickness / np.cos(theta_t))
 
+    return np.abs(obstacle.thickness / np.cos(theta_t))
 
 def calculer_phase_accumulee(obstacle, theta_i):
     """
     Calcule la phase accumulée à travers l'obstacle, en utilisant la fréquence spécifiée
     pour calculer la valeur de beta du matériau de l'obstacle.
     """
-    # Calcul de la distance parcourue par le rayon à travers l'obstacle
     s = calculer_distance_parcourue(obstacle, theta_i)
-    # Calcul de l'angle de transmission theta_t
     theta_t = calcul_angle_trans(obstacle, theta_i)
-    # Calcul de la valeur de beta pour le matériau de l'obstacle à la fréquence
     beta_value = (2*np.pi*frequency)/299792458
-
     phase_accumulee = 1j*2*beta_value * s * np.sin(theta_t) * np.sin(theta_i)
 
     return phase_accumulee
 
-
 def calculer_coeff_reflexion(obstacle, position_emetteur, position_reflexion): #ok
     """
-    Ccalculer le coefficient de réflexion.
+    Calculer le coefficient de réflexion.
     """
     theta_i = calculer_angle_incidence(position_emetteur, position_reflexion, obstacle)
     theta_t =calcul_angle_trans(obstacle, theta_i)
@@ -108,7 +96,6 @@ def calculer_coeff_reflexion(obstacle, position_emetteur, position_reflexion): #
     gamma_m = calculer_gammam(obstacle)
     s = calculer_distance_parcourue(obstacle, theta_i)
     beta_s = calculer_phase_accumulee(obstacle, theta_i)
-
     numerateur = gammap * np.exp(-2 * gamma_m*s) * np.exp(beta_s)
     denominateur = 1 - ((gammap ** 2) * np.exp(-2 * gamma_m * s) * np.exp(beta_s))
 
