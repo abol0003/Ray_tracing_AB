@@ -63,13 +63,19 @@ class Obstacle:
 
         return False
 
-    def is_on_obstacle(self, intersection_point): #ok
+    def is_on_obstacle(self, intersection_point):
         """Vérifie si le point d'intersection est sur l'obstacle."""
+        # Pour les segments verticaux
         if self.is_vertical():
             return min(self.start.y, self.end.y) <= intersection_point.y <= max(self.start.y, self.end.y)
-        else:
+        # Pour les segments horizontaux
+        elif self.is_horizontal():
             return min(self.start.x, self.end.x) <= intersection_point.x <= max(self.start.x, self.end.x)
-
+        # Pour les segments obliques
+        else:
+            # Utiliser l'équation paramétrique du segment
+            t = (intersection_point.x - self.start.x) / (self.end.x - self.start.x)
+            return 0 <= t <= 1
     def impact_point(self, ray_start, ray_end): #ok
         """
         Calcule le point d'impact entre un rayon et cet obstacle.

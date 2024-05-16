@@ -13,20 +13,13 @@ class RayTracing:
         """
         Calcule la position image pour un obstacle donné par rapport à une position.
         """
-        if obstacle.is_vertical():  # Si l'obstacle est vertical
+        AB = np.array([obstacle.end.x - obstacle.start.x, obstacle.end.y - obstacle.start.y])
+        n = np.array([-AB[1], AB[0]])  # Vecteur normal à l'obstacle
+        A = np.array([obstacle.start.x, obstacle.start.y])
+        source = np.array([source_position.x, source_position.y])
+        image_position = source - 2 * (np.dot(source - A, n) / np.dot(n, n)) * n
 
-            return Position(2 * obstacle.start.x - source_position.x, source_position.y)
-        elif obstacle.is_horizontal():  # Si l'obstacle est horizontal
-
-            return Position(source_position.x, 2 * obstacle.start.y - source_position.y)
-        else:  # Pour un obstacle oblique
-            AB = np.array([obstacle.end.x - obstacle.start.x, obstacle.end.y - obstacle.start.y])
-            n = np.array([-AB[1], AB[0]])  # Vecteur normal à l'obstacle
-            A = np.array([obstacle.start.x, obstacle.start.y])
-            source = np.array([source_position.x, source_position.y])
-            image_position = source - 2 * (np.dot(source - A, n) / np.dot(n, n)) * n
-
-            return Position(image_position[0], image_position[1])
+        return Position(image_position[0], image_position[1])
     def calc_distance(self, p1, p2):
         """
         norme de la distance entre 2 points
