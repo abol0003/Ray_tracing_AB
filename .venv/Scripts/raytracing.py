@@ -2,12 +2,24 @@ import numpy as np
 from physics import transmission_totale, calculer_coeff_reflexion
 from position import Position
 from material import Material
+from obstacle import Obstacle
 class RayTracing:
 
     def __init__(self, environment, frequency):
         self.environment = environment
         self.frequency = frequency
-        self.beta = (2*np.pi*frequency)/299792458
+        self.beta = (2 * np.pi * frequency) / 299792458
+        c = 299792458
+        lamb = c / frequency
+        self.h_e = lamb / np.pi
+        mu0 = 4 * np.pi * 1e-7
+        eps0 = 8.854187817e-12
+        self.Ra = 73
+        Z0 = np.sqrt(mu0 / eps0)
+        self.G_TX = (np.pi * Z0 * (np.abs(self.h_e)) ** 2) / (self.Ra * (lamb ** 2))
+        self.P_TX = 1e-3 * (10 ** (20 / 10))
+
+
 
     def compute_image_position(self, obstacle, source_position):
         """
@@ -30,11 +42,8 @@ class RayTracing:
         """
         champs electrique (V/m) et puissance (W)
         """
-        c= 299792458
-        h_e = c/(self.frequency * np.pi)
-        R_a=73
-        Elec_field = (coefficient * np.sqrt(60* 1.7 * ((10**(2))/1000)) * np.exp(1j * (-distance) * self.beta)) / distance
-        Power = ((h_e * np.abs(Elec_field)) ** 2) / (8 * R_a)
+        Elec_field = (coefficient * np.sqrt(60 * self.G_TX * self.P_TX) * np.exp(1j * (-distance) * self.beta)) / distance
+        Power = ((self.h_e * np.abs(Elec_field)) ** 2) / (8 * self.Ra)
 
         return Elec_field, Power
 
