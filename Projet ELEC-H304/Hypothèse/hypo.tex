@@ -1,0 +1,68 @@
+Le cadre de ce projet repose sur plusieurs hypothèses clés qui sont détaillées ci-dessous :
+\begin{enumerate}
+    \item L'étude est limitée à une configuration bidimensionnelle où l'émetteur et le récepteur sont placés à la même hauteur du sol.
+    \item Les ondes sont considérées comme se propageant uniquement dans le plan horizontal, avec une polarisation perpendiculaire à ce plan.
+    \item La diffraction par les obstacles n'est pas prise en compte dans ce modèle.
+    \item La puissance moyenne est calculée au centre d'un carré fictif de côté \(0.5\) mètres.
+    \item Les antennes sont modélisées comme des dipôles idéaux émettant une puissance de \(20\) dBm.
+    \item L'épaisseur des murs est négligée dans le tracé des rayons.
+\end{enumerate}
+Ces simplifications facilitent le calcul des grandeurs physiques importantes et la compréhension des principes de base de la propagation des ondes.
+
+\section{Modélisation Mathématique}
+La hauteur équivalente des antennes, dans le contexte de la seconde hypothèse, est simplifiée par l'équation suivante :
+\begin{equation}
+    h_e = -\frac{\lambda}{\pi}
+    \label{batard}
+\end{equation}
+où \( \lambda \) est la longueur d'onde calculée par \( \lambda = \frac{c}{f} \), avec \( c \) la vitesse de la lumière et \( f \) la fréquence de l'émetteur (\(60\) GHz). En substituant ces valeurs dans \ref{batard} :
+\[
+    h_e = -\frac{299792458}{60 \times 10^9 \times \pi} \approx -1.59045 \times 10^{-3} \text{ mètres}
+\]
+
+Cette hauteur constante simplifie l'expression de la puissance reçue, utilisant l'équation du cours :
+\begin{equation}
+P_{RX} = \frac{1}{8 R_a} \left|\sum_{n=1}^{N} \vec{h}_e^{RX}\left(\frac{\pi}{2}, \phi_n\right) \underline{E}_n(\vec{r})\right|^2
+\end{equation}
+
+Le gain de l'antenne émettrice est déterminé par :
+\begin{equation}
+    G_{TX} = \frac{\pi Z_0}{Ra}\frac{|\vec{h_{e\perp}}|^2}{\lambda^2} \approx 1.64
+\end{equation}
+
+
+\section{Caractéristiques des Matériaux}
+Les propriétés électromagnétiques des matériaux sont indispensables pour les calculs de réflexions et transmissions qui diffèrent en fonction des propriétés du matériau.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|c|c|}
+\hline
+\textbf{Matériau} & \textbf{Permittivité relative} & \textbf{Conductivité (S/m)} \\ \hline
+Brique           & 3.95                           & 0.073                      \\ \hline
+Béton            & 6.4954                         & 1.43                       \\ \hline
+Cloison          & 2.7                            & 0.05346                    \\ \hline
+Vitre            & 6.3919                         & 0.00107                    \\ \hline
+Paroi métallique & 1                              & $10^7$                        \\ \hline
+\end{tabular}
+\caption{Propriétés électromagnétiques des matériaux}
+\label{tab:material-properties}
+\end{table}
+
+\section{Sensibilité du Récepteur et Débit Binaire}
+La sensibilité du récepteur est corrélée de manière linéaire au débit binaire maximal sur une échelle logarithmique, comme indiqué dans le tableau suivant :
+\begin{table}[h]
+\centering
+\begin{tabular}{|c|c|}
+\hline
+\textbf{Sensibilité (dBm)} & \textbf{Débit binaire maximal} \\
+\hline
+-90 & 50 Mb/s \\
+-40 & 40 Gb/s \\
+\hline
+\end{tabular}
+\caption{Corrélation entre la sensibilité et le débit binaire}
+\label{tab:sensitivity}
+\end{table}
+
+Au-delà des extrêmes de cette corrélation, la communication est soit impossible (pour une sensibilité inférieure à \(-90\) dBm) soit plafonnée (pour une sensibilité supérieure à \(-40\) dBm). En présence de plusieurs émetteurs, le récepteur choisira celui qui offre la plus grande puissance de signal, sans sommer les puissances des autres émetteurs.

@@ -1,0 +1,41 @@
+L'ensemble du projet a été réalisé avec le langage de programmation Python. Pour ce faire l'implémentation a été faite en orienté objet ce qui permet la flexibilité et la facilité d'interaction entre les différentes classes. Le programme a été compilé avec la version 3.11 de Python dans l'environnement PyCharm.
+\section{Justification du choix du langage}
+\begin{enumerate}
+    \item \textbf{Bibliothèques spécialisées :} Python offre un accès à une large gamme de bibliothèques telles que NumPy pour les opérations matricielles et mathématiques avancées, et Matplotlib pour la visualisation de données. 
+    \item \textbf{Productivité et lisibilité :} La syntaxe de Python est conçue pour être claire et lisible, réduisant ainsi la complexité du code et facilitant la maintenance. Cela me permet de me concentrer davantage sur les problèmes techniques plutôt que sur les détails de programmation.
+    \item \textbf{Interactivité :} Python supporte l'exécution de code de manière interactive, ce qui est idéal pour tester des hypothèses et ajuster les algorithmes en temps réel durant la phase de développement.
+
+    \item \textbf{Flexibilité :} Le langage est extrêmement flexible.
+\end{enumerate}
+De plus, Python est le langage que je maîtrise le mieux, ce qui m'a permis d'optimiser mon temps de travail pour un projet de cette ampleur réalisé seul.
+
+\section{Organisation du code}
+Le code a été structuré dans plusieurs fichiers .py, chacun contenant une classe avec une fonctionnalité spécifique, à l'exception de \texttt{physics.py}, \texttt{heatmap.py} et \texttt{optimisation.py}. Le code complet est en annexe \ref{codesource}, voici une description des fichiers :
+
+\begin{itemize}
+    \item \texttt{material.py} : Cette classe gère les caractéristiques des différents matériaux comme la permittivité et la conductivité, essentielles pour le calcul des interactions des ondes.
+    \item \texttt{position.py} : Gère les positions des différents obstacles et rayons dans l'espace de simulation.%, une composante fondamentale pour tracer les obstacles et les ondes.
+    \item \texttt{obstacle.py} : Utilisée pour définir les obstacles dans l'espace de simulation et inclut des méthodes pour détecter les intersections avec les trajectoires des ondes.
+    \item \texttt{emitter.py} et \texttt{receiver.py} : Ces classes représentent respectivement les sources émettrices et les points de réception des ondes dans l'environnement.
+    \item \texttt{environment.py} : Centralise la création de l'environnement en assemblant émetteurs, récepteurs, et obstacles.
+    \item \texttt{raytracing.py} : Coeur du simulateur, cette classe calcule la propagation des ondes en prenant en compte les interactions directes et réfléchies (jusqu'à deux réflexions).
+    \item \texttt{physics.py} : Contient les fonctions de calcul des propriétés physiques comme les coefficients de réflexion et de transmission.
+    \item \texttt{heatmap.py} : Produit la heatmap des intensités de signal reçues pour une certaine résolution.
+    \item \texttt{optimisation.py} : Calcule les positions optimales pour un et deux emetteurs permettant une couverture maximale dans l'appartement.
+\end{itemize}
+
+Chaque classe et chaque fichier sont interdépendants et ont été conçus pour maximiser la réutilisabilité et la maintenance du code. L'utilisation de classes permet non seulement une encapsulation claire des fonctionnalités mais facilite également les tests et les modifications futures.
+
+\subsection{Implémentation du Ray-Tracing}
+L'implémentation de l'algorithme de ray-tracing dans le simulateur calcule la propagation des ondes en prenant en compte quatre types d'interactions avec l'environnement : la propagation directe, la réflexion simple, et la réflexion double, la transmission.
+
+Pour la \textbf{propagation directe}, le simulateur examine d'abord l'existence d'obstacles sur la ligne directe entre l'émetteur et le récepteur. Si un obstacle est détecté, il calcule le coefficient de transmission à travers cet obstacle et utilise cette information pour ajuster la puissance du signal reçu en conséquence.
+
+La \textbf{réflexion simple} est traitée en calculant d'abord la position image de l'émetteur par rapport à l'obstacle concerné. Le simulateur détermine ensuite le point d'impact en recherchant l'intersection de la trajectoire de l'onde réfléchie avec le récepteur. Après cela, il procède au calcul des coefficients de transmission et de réflexion, ainsi que des autres paramètres nécessaires pour estimer la puissance du signal réfléchi reçu.
+
+Pour la \textbf{double réflexion}, le processus est similaire mais adapté pour prendre en compte deux réflexions successives. Cela implique le calcul des positions image successives et des points d'impact pour chaque réflexion, suivis par l'évaluation des coefficients et des distances cumulatives, permettant ainsi de déterminer l'atténuation du signal après deux interactions avec des obstacles.
+
+Chacun de ces processus repose sur une approche vectorielle  pour tracer précisément les trajets des ondes et pour calculer avec exactitude l'impact des interactions matérielles sur la propagation des ondes.
+ 
+
+
