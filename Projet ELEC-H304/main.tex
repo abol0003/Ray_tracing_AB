@@ -1,0 +1,113 @@
+\documentclass[12pt,a4paper]{ULBReport} %Template de rapport
+\usepackage[utf8]{inputenc}
+\graphicspath{ {./Pictures/} }
+\sceau{Pictures/sceauULB.jpg}
+\usepackage{multirow}
+\usepackage{listings}
+\usepackage{color} 
+\usepackage{setspace} 
+\usepackage{amsmath}
+\usepackage{color}
+\usepackage{hyperref}
+\usepackage{biblatex}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{booktabs}
+\usepackage{floatrow}
+\usepackage{appendix}
+\usepackage[T1]{fontenc}
+\usepackage{minted}
+\setminted{
+  fontsize=\footnotesize,
+  linenos,
+  breaklines,
+}
+
+\addbibresource{biblio.bib}
+
+
+\lstdefinelanguage{Python}{ 
+numbers=left, 
+numberstyle=\footnotesize, 
+numbersep=1em, 
+xleftmargin=1em, 
+framextopmargin=2em, 
+framexbottommargin=2em, 
+showspaces=false, 
+showtabs=false, 
+showstringspaces=false, 
+frame=l, 
+tabsize=4, 
+% Basic 
+basicstyle=\ttfamily\small\setstretch{1}, 
+backgroundcolor=\color{Background}, 
+% Comments 
+commentstyle=\color{Comments}\slshape, 
+% Strings 
+stringstyle=\color{Strings}, 
+morecomment=[s][\color{Strings}]{"""}{"""}, 
+morecomment=[s][\color{Strings}]{'''}{'''}, 
+% keywords 
+morekeywords={import,from,class,def,for,while,if,is,in,elif,else,not,and,or,print,break,continue,return,True,False,None,access,as,,del,except,exec,finally,global,import,lambda,pass,print,raise,try,assert}, 
+keywordstyle={\color{Keywords}\bfseries}, 
+% additional keywords 
+morekeywords={[2]@invariant,pylab,numpy,np,scipy}, 
+keywordstyle={[2]\color{Decorators}\slshape}, 
+emph={self}, 
+emphstyle={\color{self}\slshape}, 
+% 
+} 
+
+\newcommand{\dd}[1]{\mathrm{d}#1}
+\newcommand{\avec}[0]{
+    \hspace{0.2cm}
+    \text{avec :}
+    \hspace{0.2cm}
+}
+\newcommand{\ou}[0]{
+    \hspace{0.2cm}
+    \text{d'où : }
+    \hspace{0.2cm}
+}
+\newcommand{\et}[0]{
+    \hspace{0.2cm}
+    \text{et}
+    \hspace{0.2cm}
+}
+\newcommand{\mtxt}[1]{
+    \hspace{0.2cm}
+    \text{#1}
+}
+
+%La Commande \TODO permet de mettre en rouge clairement ce qu'il reste à faire.
+\newcommand{\TODO}[1]{
+    \color{red}
+    \textbf{TODO : } #1
+    \color{black}
+}
+
+\begin{document}
+
+\titleULB {
+    title={Réalisation d’un logiciel de ray-tracing},
+    studies={IRCI - BA3 Eléctronique et télécommunication},
+    course ={ELEC-H304},
+    author={\textit{Auteur:} \\ BOLLENGIER Alexis },
+    date={\textbf{Année Académique :} \\ 2023 - 2024},
+    teacher={\textit{Professeur : } \\ DE DONCKER Philippe },
+    assistant={\textit{Assistant : } \\ GONTIER Quentin },
+    logo={Pictures/logo-polytech.jpg},
+    manyAuthor
+}
+\chapter{Introduction}
+\input{Intro/introduction}
+\chapter{Hypothèses du Projet}
+\input{Hypothèse/hypo}
+\chapter{Explication du code}
+\input{Code/fonctionnement}
+\chapter{Validation du simulateur}
+\input{Simul exo 4.1/ex4.1}
+\chapter{Resultat et Optimisation}
+\input{Resultat Puis et debit binaire/Res}
+\input{Annexes/annexe}
+\end{document}

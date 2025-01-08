@@ -1,0 +1,63 @@
+Après validation du simulateur, l'implémentation des caractéristiques spécifiques du projet a été réalisée, telles que l'environnement de simulation, la fréquence des ondes utilisées et les conditions spécifiques du projet détaillées dans le cahier des charges. Le simulateur a été configuré pour une fréquence de 60 GHz, correspondant à la norme IEEE 802.11ay pour le Wi-Fi, et a été simulé en présence et en absence de l'ascenseur. \footnote{Tous les graphes de ce chapitre sont en grande taille en Annexe A.}
+
+
+\section{Configuration initiale}
+L'environnement de simulation comprend plusieurs obstacles représentant les murs internes et externes d'un appartement. Ces obstacles ont été modélisés avec des propriétés matérielles spécifiques, telles que la permittivité et la conductivité, qui influencent la réflexion et la transmission des ondes. Un émetteur unique a été placé initialement en un point imposé de l'appartement, précisément à la position (9,4m ; -7m).
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{Pictures/plan appart.jpeg}
+    \caption{implémentation de l'appartement}
+    \label{appart}
+\end{figure}
+
+\subsubsection{Résultats}
+Les résultats de cette première simulation ont montré des zones de couverture inégales, avec des diminutions notables de puissance dans les zones éloignées de l'émetteur ou situées derrière des obstacles à forte atténuation. Seulement une partie de la maison est couverte, que ce soit avec ou sans l'ascenseur. Pour la situation avec ascenseur, la puissance moyenne dans tout l'appartement\footnote{Pour le calcul de la moyenne,l'emplacement de l'ascenseur fait partie de l'appartement, qu'il soit à l'étage ou non} est de $-69,65$ dBm. Ensuite, pour trouver le débit binaire à chaque endroit, la linéarité entre la puissance et le débit binaire a été exploitée en faisant une interpolation linéaire pour les valeurs comprises entre $]-90;-40[$ dBm. L'équation linéaire est de type :
+
+\begin{equation}
+    y_{Mbps}= (P_{dBm}+90)\times (\frac{39950}{50}) +50
+\end{equation} 
+
+Les valeurs supérieur à -40 dBm ont directement été associés à $40000 \frac{Mb}{s}$ et celle inférieur à -90 dBm à $50 \frac{Mb}{s}$.
+Les heatmaps associées sont ci dessous\footnote{Il a été décidé d'afficher les heatmaps pour une résolution de $0,2m \times 0,2m$.}.
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}[b]{0.49\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{Pictures/dBm.png}
+    \caption{Heatmap puissance (dBm)\ref{dbmbasea}}
+    \label{fig:direct}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.49\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{Pictures/mbps.png}
+    \caption{Heatmap débit binaire (Mb/s)\ref{mbpsbasea}}
+    \label{fig:}
+\end{subfigure}
+\caption{Différentes heatmaps du scénario de base avec ascenseur }
+\label{fig:ray_tracing}
+\end{figure}
+
+Ensuite, le cas où l'ascenseur n'est pas à l'étage a été pris en compte. On remarque ci-dessous \ref{okemec} que ce scénario est similaire à celui avec ascenseur, car la puissance moyenne dans l'appartement est identique. Cela est dû au mauvais placement de l'antenne.
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}[b]{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{Pictures/bpmsa.png}
+    \caption{Heatmap puissance (dBm)\ref{dbmbasesa}}
+    \label{fig:}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{Pictures/mbpssa.png}
+    \caption{Heatmap débit binaire (Mb/s)\ref{mbpsbasesa}}
+    \label{fig:}
+\end{subfigure}
+\caption{Différentes heatmaps du scénario de base sans ascenseur }
+\label{okemec}
+\end{figure}
+\input{Resultat Puis et debit binaire/opti}
+\input{Resultat Puis et debit binaire/conclusion}
